@@ -166,7 +166,7 @@ let songTeaser = {
 								<i v-show="paused" class="fas fa-play"></i>
 								<i v-show="!paused && !loading" class="fas fa-pause"></i>
 								<i v-show="!paused && loading" class="fas fa-spinner fa-spin"></i>
-								Reproducir
+								{{paused ? 'Reproducir' : 'Pausar'}}
 							</button>
 						</div>
 						<div class="col px-1">
