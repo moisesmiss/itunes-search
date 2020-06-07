@@ -139,7 +139,7 @@ let searchForm = {
 let songTeaser = {
 	template: /*html*/
 	`
-	<div class="h-100 card">
+	<div class="h-100 card song">
 		<div class="row no-gutters">
 			<div class="col-auto">
 				<a :href="song.trackViewUrl" target="_blank" class="d-inline-block">
