@@ -122,7 +122,7 @@ let searchForm = {
 		...Vuex.mapMutations(['setTerm', 'setPage']),
 		search: function() {
 			let audios = document.querySelectorAll('audio');
-			this.$refs.input.blur();
+			this.$refs.input.blur(); 
 			audios.forEach(item => item.pause());
 			this.setTerm(this.term);
 			this.setPage(1);
