@@ -98,7 +98,7 @@ let searchForm = {
 	<form @submit.prevent="search">
 		<div class="form-row">
 			<div class="col">
-				<input ref="input" v-model="term" type="search" class="form-control">
+				<input ref="input" v-model="term" type="search" class="form-control" placeholder="Artista">
 			</div>
 			<div class="col-auto">
 				<button class="btn btn-primary"><i class="fa fa-search"></i></button>
