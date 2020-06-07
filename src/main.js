@@ -94,7 +94,7 @@ let searchForm = {
 	<form @submit.prevent="search">
 		<div class="form-row">
 			<div class="col">
-				<input v-model="term" type="search" class="form-control">
+				<input ref="input" v-model="term" type="search" class="form-control">
 			</div>
 			<div class="col-auto">
 				<button class="btn btn-primary"><i class="fa fa-search"></i></button>
@@ -122,10 +122,12 @@ let searchForm = {
 		...Vuex.mapMutations(['setTerm', 'setPage']),
 		search: function() {
 			let audios = document.querySelectorAll('audio');
+			this.$refs.input.blur();
 			audios.forEach(item => item.pause());
 			this.setTerm(this.term);
 			this.setPage(1);
 			this.getSongs();
+
 		},
 	},
 };
