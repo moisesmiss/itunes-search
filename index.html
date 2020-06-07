@@ -14,12 +14,12 @@
 <body>
     <div class="container">
         
-        <div id="app" v-cloak class="py-5">
+        <div id="app" v-cloak class="py-3 py-md-5">
             <h1 class="h5">Buscador iTUNES</h1>
             <search-form></search-form>
             <pagination-search></pagination-search>
             <div class="row" v-show="!loading">
-                <div class="col-md-6 col-lg-4 my-3" v-for="(song, index) in songsFiltered" :key="song.trackId">
+                <div class="col-md-6 col-lg-4 my-2 my-md-3" v-for="(song, index) in songsFiltered" :key="song.trackId">
                     <song-teaser :song="song"></song-teaser>
                 </div>
             </div>

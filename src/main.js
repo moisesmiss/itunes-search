@@ -17,6 +17,7 @@ let store = new Vuex.Store({
 	getters: {
 		songsFiltered(state){
 			if(state.songs != null){
+				return state.songs;
 				return state.songs.filter(song => song.trackNumber > 4);
 			} else {
 				return null;
@@ -98,16 +99,18 @@ let searchForm = {
 	<form @submit.prevent="search">
 		<div class="form-row">
 			<div class="col">
-				<input ref="input" v-model="term" type="search" class="form-control" placeholder="Artista">
-			</div>
-			<div class="col-auto">
-				<button class="btn btn-primary"><i class="fa fa-search"></i></button>
+				<div class="input-group">
+					<input ref="input" v-model="term" type="search" class="form-control" placeholder="Ej. Rihanna">
+					<div class="input-group-append">
+						<button class="btn btn-primary"><i class="fa fa-search"></i></button>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="row" v-show="!loading">
 			<div class="col-12">
-				<p v-if="songsFiltered != null && !songsFiltered.length" class="my-3">No se encontraron canciones para la búsqueda.</p>
-				<p v-if="songsFiltered != null && songsFiltered.length" class="my-3 badge badge-secondary">{{songsFiltered.length}}</p>
+				<p v-if="songsFiltered != null && !songsFiltered.length" class="my-2">No se encontraron canciones para la búsqueda.</p>
+				<p v-if="songsFiltered != null && songsFiltered.length" class="my-2 badge badge-secondary">Resultados: {{songsFiltered.length}}</p>
 			</div>
 		</div>
 	</form>
@@ -141,31 +144,47 @@ let songTeaser = {
 	`
 	<div class="h-100 card song">
 		<div class="row no-gutters">
-			<div class="col-auto">
+			<div class="col-auto d-flex flex-column">
 				<a :href="song.trackViewUrl" target="_blank" class="d-inline-block">
 					<img  class="card-img-left" :src="song.artworkUrl100">
 				</a>
 			</div>
 			<div class="col">
-				<div class="p-2 d-flex flex-column">
+				<div class="px-2 py-1 d-flex flex-column h-100">
 
-					<h6 class="mb-1"><a :href="song.trackViewUrl" target="_blank">{{song.trackName}}</a></h6>
+					<h6 class="mb-0"><a :href="song.trackViewUrl" target="_blank">{{song.trackName}}</a></h6>
 					<div>
-						<span class="badge badge-primary" style="white-space: normal;"><i class="fas fa-microphone-alt"></i> {{song.artistName}}</span>
+						<span class="badge badge-primary"><i class="fas fa-microphone-alt"></i> {{song.artistName}}</span>
+						<small class="badge badge-light"><i class="fas fa-record-vinyl"></i> {{song.collectionName}}</small>
 					</div>
-					<small><i class="fas fa-record-vinyl"></i> {{song.collectionName}}</small>
-					<small><i class="fas fa-music"></i> {{song.primaryGenreName}}</small>
-					<small><i class="fas fa-calendar-alt"></i> {{song.releaseDate|formatDate}}</small>
-					<div>
-						<audio ref="audio" :src="song.previewUrl"></audio>
-						<button 
-						class="btn btn-sm mt-2" 
-						:class="{'btn-primary': !paused, 'btn-outline-primary': paused}" @click="play">
-							<i v-show="paused" class="fas fa-play"></i>
-							<i v-show="!paused" class="fas fa-pause"></i>
-						</button>
+					<audio ref="audio" :src="song.previewUrl"></audio>
+					<div class="row no-gutters mx-n1 pt-1 mt-auto">
+						<div class="col px-1">
+							<button
+							class="btn btn-sm btn-block" 
+							:class="{'btn-primary': !paused, 'btn-outline-primary': paused}" @click="play">
+								<i v-show="paused" class="fas fa-play"></i>
+								<i v-show="!paused && !loading" class="fas fa-pause"></i>
+								<i v-show="!paused && loading" class="fas fa-spinner fa-spin"></i>
+								Reproducir
+							</button>
+						</div>
+						<div class="col px-1">
+							<a :href="song.trackViewUrl" target="_blank" class="btn btn-sm btn-outline-dark btn-block">
+								<i class="fab fa-apple"></i> Ver en itunes
+							</a>
+						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div class="image-info row no-gutters py-1 position-relative flex-fill d-flex align-items-center">
+			<div class="progress" ref="progress"></div>
+			<div class="col px-1">
+				<small><i class="fas fa-music"></i> {{song.primaryGenreName}}</small>
+			</div>
+			<div class="col-auto px-1">
+				<small><i class="fas fa-calendar-alt"></i> {{song.releaseDate|formatDate}}</small>
 			</div>
 		</div>
 	</div>
@@ -174,6 +193,11 @@ let songTeaser = {
 	data(){
 		return {
 			paused: true,
+			currentTime: null,
+			duration: null,
+			buffered: null,
+			loading: false,
+			progress: 0,
 		};
 	},
 	mounted() {
@@ -187,11 +211,31 @@ let songTeaser = {
 		this.$refs.audio.addEventListener('pause', (event) => {
 			this.paused = true;
 		});
+		this.$refs.audio.addEventListener('waiting', (event) => {
+			this.loading = true;
+		});
+		this.$refs.audio.addEventListener('canplay', (event) => {
+			this.loading = false;
+		});
+		setInterval(() => {
+			let audio = this.$refs.audio;
+			if(audio == undefined) return;
+			this.currentTime = audio.currentTime.toFixed(2);
+			this.duration = audio.duration;
+			this.buffered = audio.played;
+			this.getProgress();
+		},1000);
 	},
 	methods: {
 		play(){
 			if(this.paused) this.$refs.audio.play();
 			else this.$refs.audio.pause();
+		},
+		getProgress(){
+			let audio = this.$refs.audio;
+			this.progress = 100 / audio.duration * audio.currentTime;
+			this.progress = parseFloat(this.progress.toFixed(2));
+			this.$refs.progress.style.width = `${this.progress}%`;
 		}
 	},
 	computed: {

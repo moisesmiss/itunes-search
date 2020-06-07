@@ -5,3 +5,27 @@
 .song{
     overflow: hidden;
 }
+
+.song .btn{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.song .badge{
+    white-space: normal;
+}
+
+.image-info{
+    background: #f5f5f5;
+    color: #616161;
+}
+
+.progress{
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: #EEEEEE;
+    border-radius: 0;
+}
