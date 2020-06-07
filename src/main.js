@@ -47,8 +47,12 @@ let store = new Vuex.Store({
 					limit: state.songs_per_page,
 					media: 'music',
 				};
+				let headers = {
+					'Access-Control-Allow-Origin' : '*',
+      				'Access-Control-Allow-Methods' : 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+				}
 				commit('changeLoading', true);
-				let {data: {results: songs}} = await axios.get(`https://itunes.apple.com/search`, {params});
+				let {data: {results: songs}} = await axios.get(`https://itunes.apple.com/search`, {params, headers});
 				commit('setSongs', songs);
 				return songs;
 			} catch (error) {
